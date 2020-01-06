@@ -19,6 +19,6 @@ function RunRadio(mode, n = undefined) {
 
 $(document).ready(function()  {
     let ddstatus = Cookies.get('runDD');
-    if (ddstatus == "1"):
+    if (ddstatus == "1")
         RunRadio();
 });
