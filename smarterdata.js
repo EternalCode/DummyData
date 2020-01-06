@@ -48,6 +48,7 @@ function RunArray() {
 function RunShortText() {
     let answers = document.getElementsByClassName("answer-item");
     answers[0].getElementsByClassName("form-control")[0].value = "Dummy data"
+    $('#movenextbtn, #movesubmitbtn').trigger('click');
 }
 
 $(document).ready(function()  {
