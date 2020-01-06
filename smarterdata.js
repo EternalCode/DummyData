@@ -35,7 +35,7 @@ function RunArray() {
     }
 }
 
-function ShortText() {
+function RunShortText() {
     let answers = document.getElementsByClassName("answer-item");
     answers[0].getElementsByClassName("form-control")[0].value = "Dummy data"
 }
@@ -44,13 +44,15 @@ $(document).ready(function()  {
     let ddstatus = Cookies.get('runDD');
     if (ddstatus == "1") {
         // run the correct DD
-        if (len(document.getElementsByClassName("list-radio")) > 0) {
+        if ((document.getElementsByClassName("list-radio").length) > 0) {
             RunRadio();
-        } else if(len(document.getElementsByClassName("array-flexible-row")) > 0) {
+        } else if (document.getElementsByClassName("array-flexible-row").length > 0) {
             RunArray();
-        } else if(len(document.getElementsByClassName("text-short")) > 0) {
-            RunArray();
-        } else if(len(document.getElementsByClassName("boilerplate")) > 0) {
+        } else if (document.getElementsByClassName("text-short").length > 0) {
+            RunShortText();
+        } else if (document.getElementsByClassName("boilerplate").length > 0) {
+            $('#movenextbtn, #movesubmitbtn').trigger('click');
+        } else {
             $('#movenextbtn, #movesubmitbtn').trigger('click');
         }
     }
