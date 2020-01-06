@@ -8,11 +8,20 @@ function RunRadio() {
     let answers = document.getElementsByClassName("answer-item");
     let checkedIndex = GetRandomInt(0, answers.length);
     let radioId = answers[checkedIndex].id.replace("javatbd", "answer");
-    let button = document.getElementById(radioId);
-    button.checked = true;
-    // TODO Numerical inputs need to be distinguished
-    if (document.getElementById(radioId + 'othertext') != null)
+    let isOther = false;
+    let button;
+    if (radioId.includes("other")) {
+        // TODO Numerical inputs need to be distinguished
+        // select button for other option
+        isOther = true;
+        radioId = radioId.replace("other", "");
         document.getElementById(radioId + 'othertext').value='dd test';
+        button = document.getElementById("SOTH" + radioId.replace("answer", ""));
+        button.checked = true;
+    } else {
+        button = document.getElementById(radioId);
+        button.checked = true;
+    }
     button.onclick();
     $('#movenextbtn, #movesubmitbtn').trigger('click');
 }
@@ -33,6 +42,7 @@ function RunArray() {
         button.checked = true;
         button.onclick();
     }
+    $('#movenextbtn, #movesubmitbtn').trigger('click');
 }
 
 function RunShortText() {
