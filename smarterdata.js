@@ -52,34 +52,35 @@ function RunShortText() {
 }
 
 $(document).ready(function()  {
-    let ddstatus = Cookies.get('runDD');
-    if (ddstatus == "1") {
-        // run the correct DD
-        if ((document.getElementsByClassName("list-radio").length) > 0) {
-            RunRadio();
-        } else if (document.getElementsByClassName("array-flexible-row").length > 0) {
-            RunArray();
-        } else if (document.getElementsByClassName("text-short").length > 0) {
-            RunShortText();
-        } else if (document.getElementsByClassName("boilerplate").length > 0) {
-            $('#movenextbtn, #movesubmitbtn').trigger('click');
-        } else {
-            $('#movenextbtn, #movesubmitbtn').trigger('click');
+    $(document).ready(function()  {
+        let ddstatus = Cookies.get('runDD');
+        if (ddstatus == "1") {
+            // run the correct DD
+            if ((document.getElementsByClassName("list-radio").length) > 0) {
+                RunRadio();
+            } else if (document.getElementsByClassName("array-flexible-row").length > 0) {
+                RunArray();
+            } else if (document.getElementsByClassName("text-short").length > 0) {
+                RunShortText();
+            } else if (document.getElementsByClassName("boilerplate").length > 0) {
+                $('#movenextbtn, #movesubmitbtn').trigger('click');
+            } else {
+                $('#movenextbtn, #movesubmitbtn').trigger('click');
+            }
         }
-    }
 
-    // rotation tracker
-    let rotTracker = Cookies.get('rotationTracker');
-    let rotTracker2 = Cookies.get('rotationTracker2');
-    let currentQid = document.getElementById("fieldnames").value.split("X")[2];
-    if (rotTracker == "undefined"){
-        // initialize rotation tracker and add the current question to it
-        Cookies.set('rotTracker', currentQid)
-        Cookies.set('rotTracker2', {QID})
-    } else {
-        rotTracker += "," + currentQid;
-        Cookies.set('rotTracker', rotTracker);
-        Cookies.set('rotTracker2', rotTracker2 + str({QID}));
-    }
-
+        // rotation tracker
+        let rotTracker = Cookies.get('rotationTracker');
+        let rotTracker2 = Cookies.get('rotationTracker2');
+        let currentQid = document.getElementById("fieldnames").value.split("X")[2];
+        if (rotTracker == "undefined"){
+            // initialize rotation tracker and add the current question to it
+            Cookies.set('rotTracker', currentQid)
+            Cookies.set('rotTracker2', {QID})
+        } else {
+            rotTracker += "," + currentQid;
+            Cookies.set('rotTracker', rotTracker);
+            Cookies.set('rotTracker2', rotTracker2 + str({QID}));
+        }
+    });
 });
