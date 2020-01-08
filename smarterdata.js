@@ -15,7 +15,7 @@ function RunRadio() {
         // select button for other option
         isOther = true;
         radioId = radioId.replace("other", "");
-        document.getElementById(radioId + 'othertext').value='dd test';
+        document.getElementById(radioId + 'othertext').value='2000';
         button = document.getElementById("SOTH" + radioId.replace("answer", ""));
         button.checked = true;
     } else {
@@ -52,33 +52,32 @@ function RunShortText() {
 }
 
 $(document).ready(function()  {
-    setTimeout(function() {
-        let ddstatus = Cookies.get('runDD');
-        if (ddstatus == "1") {
-            // run the correct DD
-            if ((document.getElementsByClassName("list-radio").length) > 0) {
-                RunRadio();
-            } else if (document.getElementsByClassName("array-flexible-row").length > 0) {
-                RunArray();
-            } else if (document.getElementsByClassName("text-short").length > 0) {
-                RunShortText();
-            } else if (document.getElementsByClassName("boilerplate").length > 0) {
-                $('#movenextbtn, #movesubmitbtn').trigger('click');
-            } else {
-                $('#movenextbtn, #movesubmitbtn').trigger('click');
-            }
-        }
-
-        // rotation tracker
-        let rotTracker = Cookies.get('rotationTracker');
-        console.log(rotTracker);
-        let currentQid = document.getElementById("fieldnames").value.split("X")[2];
-        if (rotTracker == undefined){
-            // initialize rotation tracker and add the current question to it
-            Cookies.set('rotationTracker', currentQid)
+    let ddstatus = Cookies.get('runDD');
+    if (ddstatus == "1") {
+        // run the correct DD
+        if ((document.getElementsByClassName("list-radio").length) > 0) {
+            RunRadio();
+        } else if (document.getElementsByClassName("array-flexible-row").length > 0) {
+            RunArray();
+        } else if (document.getElementsByClassName("text-short").length > 0) {
+            RunShortText();
+        } else if (document.getElementsByClassName("boilerplate").length > 0) {
+            $('#movenextbtn, #movesubmitbtn').trigger('click');
         } else {
-            rotTracker += "," + currentQid;
-            Cookies.set('rotationTracker', rotTracker);
+            $('#movenextbtn, #movesubmitbtn').trigger('click');
         }
-    }, 200);
+    }
+
+    // rotation tracker
+    let rotTracker = Cookies.get('rotationTracker');
+    let currentQid = document.getElementById("fieldnames").value.split("X")[2];
+    if (rotTracker == undefined){
+        // initialize rotation tracker and add the current question to it
+        Cookies.set('rotationTracker', currentQid)
+    } else {
+        if (rotTracker.includes(currentQid))
+            return;
+        rotTracker += "," + currentQid;
+        Cookies.set('rotationTracker', rotTracker);
+    }
 });
