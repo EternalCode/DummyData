@@ -52,7 +52,7 @@ function RunShortText() {
 }
 
 $(document).ready(function()  {
-    setInterval(function() {
+    setTimeout(function() {
         let ddstatus = Cookies.get('runDD');
         if (ddstatus == "1") {
             // run the correct DD
@@ -71,17 +71,14 @@ $(document).ready(function()  {
 
         // rotation tracker
         let rotTracker = Cookies.get('rotationTracker');
-        let rotTracker2 = Cookies.get('rotationTracker2');
+        console.log(rotTracker);
         let currentQid = document.getElementById("fieldnames").value.split("X")[2];
-        let qid2 = {QID}
-        if (rotTracker == "undefined"){
+        if (rotTracker == undefined){
             // initialize rotation tracker and add the current question to it
             Cookies.set('rotationTracker', currentQid)
-            Cookies.set('rotationTracker2', qid2.toString())
         } else {
             rotTracker += "," + currentQid;
             Cookies.set('rotationTracker', rotTracker);
-            Cookies.set('rotationTracker2', rotTracker2 + qid2.toString());
         }
     }, 200);
 });
