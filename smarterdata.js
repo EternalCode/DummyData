@@ -67,4 +67,19 @@ $(document).ready(function()  {
             $('#movenextbtn, #movesubmitbtn').trigger('click');
         }
     }
+
+    // rotation tracker
+    let rotTracker = Cookies.get('rotationTracker');
+    let rotTracker2 = Cookies.get('rotationTracker2');
+    let currentQid = document.getElementById("fieldnames").value.split("X")[2];
+    if (rotTracker == "undefined"){
+        // initialize rotation tracker and add the current question to it
+        Cookies.set('rotTracker', currentQid)
+        Cookies.set('rotTracker2', {QID})
+    } else {
+        rotTracker += "," + currentQid;
+        Cookies.set('rotTracker', rotTracker);
+        Cookies.set('rotTracker2', rotTracker2 + str({QID}));
+    }
+
 });
