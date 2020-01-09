@@ -84,7 +84,7 @@ function RunDD() {
 }
 
 function setpMode(value) {
-    Cookies.set('pMode', str(value));
+    Cookies.set('pMode', (value).toString());
 }
 
 function ParseModeText() {
