@@ -91,7 +91,7 @@ function ParseModeText() {
     // <p-o></p-o> = Phone only
     // <e-t></e-t> = Email and Text
     let mode = Cookies.get('pMode');
-    if (mode = undefined)
+    if (mode == undefined)
         return
     try {
         mode = parseInt(mode);
