@@ -51,7 +51,21 @@ function RunShortText() {
     $('#movenextbtn, #movesubmitbtn').trigger('click');
 }
 
-$(document).ready(function()  {
+function RotationTracker() {
+    let rotTracker = Cookies.get('rotationTracker');
+    let currentQid = document.getElementById("fieldnames").value.split("X")[2];
+    if (rotTracker == undefined){
+        // initialize rotation tracker and add the current question to it
+        Cookies.set('rotationTracker', currentQid)
+    } else {
+        if (rotTracker.includes(currentQid))
+            return;
+        rotTracker += "," + currentQid;
+        Cookies.set('rotationTracker', rotTracker);
+    }
+}
+
+function RunDD() {
     let ddstatus = Cookies.get('runDD');
     if (ddstatus == "1") {
         // run the correct DD
@@ -67,17 +81,48 @@ $(document).ready(function()  {
             $('#movenextbtn, #movesubmitbtn').trigger('click');
         }
     }
+}
 
-    // rotation tracker
-    let rotTracker = Cookies.get('rotationTracker');
-    let currentQid = document.getElementById("fieldnames").value.split("X")[2];
-    if (rotTracker == undefined){
-        // initialize rotation tracker and add the current question to it
-        Cookies.set('rotationTracker', currentQid)
-    } else {
-        if (rotTracker.includes(currentQid))
-            return;
-        rotTracker += "," + currentQid;
-        Cookies.set('rotationTracker', rotTracker);
+function setpMode(value) {
+    Cookies.set('pMode', str(value));
+}
+
+function ParseModeText() {
+    // <p-o></p-o> = Phone only
+    // <e-t></e-t> = Email and Text
+    let mode = Cookies.get('pMode');
+    if (mode = undefined)
+        return
+    try {
+        mode = parseInt(mode);
+    } catch (err) {
+        console.log("Couldn't convert pMode to int. PMode is: " + mode);
+        return
     }
+    switch (mode) {
+        case 1:
+            // phone mode, hide all email and text tags
+            let ettags = document.getElementsByTagName("E-T");
+            for (let i = 0; i < ettags.length; i++) {
+                ettags[i].parentNode.removeChild(ettags[i]);
+            }
+            break;
+        case 2:
+        case 3:
+            // email/text mode, hide all phone tags
+            let ptags = document.getElementsByTagName("P-O");
+            for (let i = 0; i < ptags.length; i++) {
+                ptags[i].parentNode.removeChild(ptags[i]);
+            }
+            break;
+    };
+}
+
+$(document).ready(function()  {
+    // Dummy Data
+    RunDD();
+    // rotation tracker
+    RotationTracker();
+    // PMode substitutions
+    ParseModeText();
 });
