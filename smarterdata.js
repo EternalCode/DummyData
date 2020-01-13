@@ -68,9 +68,17 @@ function RotationTracker() {
     }
 }
 
+/*
+* <runDD> - Runs DD for following questions
+* <pauseDD> - Stops DD for current question
+* <stopDD> - Stops DD for remaining
+*/
 function RunDD() {
     let ddstatus = Cookies.get('runDD');
-    if (ddstatus == "1") {
+    let run = document.getElementsByTagName("runDD").length;
+    let pause = document.getElementsByTagName("pauseDD").length;
+    let stop = document.getElementsByTagName("stopDD").length;
+    if (ddstatus == "1" && pause == 0 && stop == 0) {
         // run the correct DD
         if ((document.getElementsByClassName("list-radio").length) > 0) {
             RunRadio();
@@ -83,6 +91,12 @@ function RunDD() {
         } else {
             $('#movenextbtn, #movesubmitbtn').trigger('click');
         }
+    } else if (stop > 0) {
+        Cookies.set("runDD", 0);
+    } else if (run > 0) {
+        Cookies.remove('rotationTracker');
+        Cookies.set('runDD', '1');
+        RunDD();
     }
 }
 
@@ -99,7 +113,7 @@ function ParseModeText() {
     try {
         mode = parseInt(mode);
     } catch (err) {
-        console.log("Couldn't convert pMode to int. PMode is: " + mode);
+        console.log("Couldn't convert pMode to int. pMode is: " + mode);
         return
     }
     switch (mode) {
@@ -120,6 +134,8 @@ function ParseModeText() {
             break;
     };
 }
+
+
 
 $(document).ready(function()  {
     // Dummy Data
