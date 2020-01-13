@@ -105,10 +105,10 @@ function RotateItems() {
     let useUl = false;
     if (rotations.length == 0) {
         rotations = document.getElementsByTagName("rotul");
-        if (rotations.length > 0) {
+        if (rotations.length > 0)
             useUl = true;
-        }
-        return;
+        else
+            return;
     }
     // get filtered items
     let options = rotations[0].innerHTML.split("\n").join("").match(/[^\[\]]+/g);
@@ -140,6 +140,7 @@ function RotateItems() {
         result += prefix + options.splice(index, 1)[0] + suffix;
         counter++;
 	}
+    result += useUl ? "</ul>" : "";
     rotations[0].replaceWith(result);
     RotateItems();
 }
@@ -188,4 +189,5 @@ $(document).ready(function()  {
     RotationTracker();
     // PMode substitutions
     ParseModeText();
+    RotateItems();
 });
