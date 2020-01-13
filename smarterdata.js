@@ -142,7 +142,8 @@ function RotateItems() {
 	}
     if (useUl) {
         result += useUl ? "</ul>" : "";
-        rotations[0].replaceWith($(result));
+        rotations[0].replaceWith("");
+        $(rotations[0]).append($(result))
     } else {
         rotations[0].replaceWith(result);
     }
