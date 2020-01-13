@@ -140,13 +140,8 @@ function RotateItems() {
         result += prefix + options.splice(index, 1)[0] + suffix;
         counter++;
 	}
-    if (useUl) {
-        result += useUl ? "</ul>" : "";
-        $(rotations[0]).append($(result));
-        rotations[0].replaceWith("");
-    } else {
-        rotations[0].replaceWith(result);
-    }
+    result += useUl ? "</ul>" : "";
+    $(rotations[0]).replaceWith(result);
     RotateItems();
 }
 
