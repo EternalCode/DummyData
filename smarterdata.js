@@ -141,7 +141,7 @@ function RotateItems() {
         counter++;
 	}
     result += useUl ? "</ul>" : "";
-    rotations[0].replaceWith(result);
+    rotations[0].replaceWith($(result));
     RotateItems();
 }
 
