@@ -100,7 +100,51 @@ function RunDD() {
     }
 }
 
-function setpMode(value) {
+function RotateItems() {
+    let rotations = document.getElementsByTagName("rot");
+    let useUl = false;
+    if (rotations.length == 0) {
+        rotations = document.getElementsByTagName("rotul");
+        if (rotations.length > 0) {
+            useUl = true;
+        }
+        return;
+    }
+    // get filtered items
+    let options = rotations[0].innerHTML.split("\n").join("").match(/[^\[\]]+/g);
+    options = options.filter((el) => el && el.trim() != '');
+
+    let anchored = [];
+    for (let i = 0; i < options.length; i++) {
+        // get anchored items and their indexes
+        if (options[i].startsWith("$$")) {
+            options[i] = options[i].slice(2, options[i].length);
+            anchored.push({item: options[i], index : i});
+            options[i] = undefined;
+        }
+    }
+    options = options.filter((el) => el && el.trim() != '');
+    let result = useUl ? "<ul>" : "";
+    let prefix = useUl ? "<li>" : "";
+    let suffix = useUl ? "</li>" : "";
+    let counter = 0;
+	while ((options.length + anchored.length) != 0) {
+        if (anchored.length > 0) {
+            if (anchored[0].index == counter) {
+                result += prefix + anchored[0].item + suffix;
+                anchored.splice(0, 1);
+                continue;
+            }
+        }
+        let index = Math.floor(Math.random() * options.length);
+        result += prefix + options.splice(index, 1)[0] + suffix;
+        counter++;
+	}
+    rotations[0].replaceWith(result);
+    RotateItems();
+}
+
+function SetpMode(value) {
     Cookies.set('pMode', (value).toString());
 }
 
