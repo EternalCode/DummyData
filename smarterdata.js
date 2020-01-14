@@ -108,38 +108,75 @@ function RotateItems() {
     // get filtered items
     let options = rotations[0].innerHTML.split("\n").join("").match(/[^\[\]]+/g);
     options = options.filter((el) => el && el.trim() != '');
-    let ansOpts = [];
     let anchored = [];
     for (let i = 0; i < options.length; i++) {
-        let content = options[i].match(/\(([^)]+)\)/)[1];
-        if (content != "")
-            options[i].replace("(" + content + ")", "");
-        ansOpts.push(content);
+        let content = options[i].match(/\(([^)]+)\)/);
+        if (content != "" && content != null) {
+            content = content[1];
+            options[i] = options[i].replace("(" + content + ")", "");
+            options[i] = [options[i], content];
+        } else {
+            content = [];
+            options[i] = [options[i], content];
+        }
         // get anchored items and their indexes
-        if (options[i].startsWith("$$")) {
-            options[i] = options[i].slice(2, options[i].length);
-            anchored.push({item: options[i], index : i, ansOpts : content});
+        if (options[i][0].startsWith("$$")) {
+            options[i][0] = options[i][0].slice(2, options[i][0].length);
+            anchored.push({item: options[i][0], index : i, ansOpts : options[i][1]});
             options[i] = undefined;
         }
     }
-    options = options.filter((el) => el && el.trim() != '');
+    options = options.filter((el) => el && el[0].trim() != '');
     let result = useUl ? "<ul>" : "";
     let prefix = useUl ? "<li>" : "";
     let suffix = useUl ? "</li>" : "";
+    let ansList = document.getElementsByClassName("answers-list").item(0);
+    let ans = document.getElementsByClassName("answer-item");
+    let answerOptions = [];
+
+    let lenans = ans.length;
+    for (let i = 0; i < lenans; i++) {
+        answerOptions.push(ans.item(0));
+        ansList.removeChild(ans.item(0));
+    }
     let counter = 0;
-	while ((options.length + anchored.length) != 0) {
-        /* TODO Rotate ans options too */
+    while ((options.length + anchored.length) != 0) {
         if (anchored.length > 0) {
             if (anchored[0].index == counter) {
                 result += prefix + anchored[0].item + suffix;
+                let opts = anchored[0].ansOpts;
+                if (opts.length > 0) {
+                    opts = opts.split(",");
+                    opts.sort(() => Math.random() - 0.5);
+                    for (let i = 0; i < opts.length; i++) {
+                        ansList.append(answerOptions[opts[parseInt(i)]]);
+                        answerOptions[opts[parseInt(i)]] = undefined;
+                    }
+                }
+                // convert
                 anchored.splice(0, 1);
+                counter++;
                 continue;
             }
         }
         let index = Math.floor(Math.random() * options.length);
-        result += prefix + options.splice(index, 1)[0] + suffix;
+        let opts = options[index][1];
+        if (opts.length > 0) {
+            opts = opts.split(",");
+            opts.sort(() => Math.random() - 0.5);
+            for (let i = 0; i < opts.length; i++) {
+                ansList.append(answerOptions[opts[parseInt(i)]]);
+                answerOptions[opts[parseInt(i)]] = undefined;
+            }
+        }
+        result += prefix + options[index][0] + suffix;
+        options.splice(index, 1);
         counter++;
 	}
+    for (let i = 0; i < answerOptions.length; i++) {
+        if (answerOptions[i] != undefined)
+            ansList.append(answerOptions[i]);
+    }
     result += useUl ? "</ul>" : "";
     $(rotations[0]).replaceWith(result);
     RotateItems();
