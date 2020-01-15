@@ -250,6 +250,16 @@ function AnswersFlip() {
 }
 
 
+function AnswerInsertWord() {
+    let toInsert = document.getElementsByTagName("ansInsWord");
+    if (toInsert.length < 1)
+        return;
+    toInsert = toInsert[0].innerText.split(",");
+    var ans = document.getElementsByClassName("answer-item").item(0).getElementsByClassName("label-text label-clickable").item(parseInt(toInsert[1]));
+    $("<br><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + toInsert[0] + "<p>").insertAfter($(ans));
+}
+
+
 
 $(document).ready(function()  {
     // Dummy Data
@@ -260,4 +270,5 @@ $(document).ready(function()  {
     ParseModeText();
     RotateItems();
     AnswersFlip();
+    AnswerInsertWord();
 });
