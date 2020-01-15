@@ -222,7 +222,7 @@ function AnswersFlip() {
     let ansFlip = document.getElementsByTagName("ansFlip");
     if (ansFlip.length == 0)
         return;
-    let data = ansFlip.getAttribute("data-ans");
+    let data = ansFlip[0].getAttribute("data-ans");
     data = data.replace("(", "").replace(")", "").trim().split(",");
     let start = parseInt(data[0]);
     let end = parseInt(data[1]);
