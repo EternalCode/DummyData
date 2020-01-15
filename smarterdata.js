@@ -216,6 +216,40 @@ function ParseModeText() {
 }
 
 
+function AnswersFlip() {
+    // start point
+    // end points
+    let ansFlip = document.getElementsByTagName("ansFlip");
+    if (ansFlip.length == 0)
+        return;
+    let data = ansFlip.getAttribute("data-ans");
+    data = data.replace("(", "").replace(")", "").trim().split(",");
+    let start = parseInt(data[0]);
+    let end = parseInt(data[1]);
+
+    let ansList = document.getElementsByClassName("answers-list").item(0);
+    let ans = document.getElementsByClassName("answer-item");
+
+    let answerOptions = [];
+
+    for (let i = ans.length - 1; i >= 0; i--) {
+        answerOptions.push(ans.item(0));
+        ansList.removeChild(ans.item(0));
+    }
+    // get a sub array of values between start and end
+    let arrFlipped = answerOptions.slice(start, end + 1);
+    if (GetRandomInt(0, 100) >= 50)
+        arrFlipped.reverse();
+    for (let i = 0; i < answerOptions.length; i++) {
+        if (i >= start && i <= end) {
+            ansList.append(arrFlipped[i - start]);
+        } else {
+            ansList.append(answerOptions[i]);
+        }
+    }
+}
+
+
 
 $(document).ready(function()  {
     // Dummy Data
@@ -225,4 +259,5 @@ $(document).ready(function()  {
     // PMode substitutions
     ParseModeText();
     RotateItems();
+    AnswersFlip();
 });
