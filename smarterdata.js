@@ -257,6 +257,8 @@ function AnswerInsertWord() {
     toInsert = toInsert[0].innerText.split(",");
     var ans = document.getElementsByClassName("answer-item").item(parseInt(toInsert[1])).getElementsByClassName("label-text label-clickable").item(0);
     $("<br><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + toInsert[0] + "<p>").insertAfter($(ans));
+    toInsert = document.getElementsByTagName("ansInsWord");
+    $(toInsert).replaceWith("");
 }
 
 
