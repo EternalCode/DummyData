@@ -96,6 +96,7 @@ function RunDD() {
 }
 
 function RotateItems() {
+    // get rotation type, list or inline
     let rotations = document.getElementsByTagName("rot");
     let useUl = false;
     if (rotations.length == 0) {
@@ -105,7 +106,7 @@ function RotateItems() {
         else
             return;
     }
-    // get filtered items
+    // get filtered list items
     let options = rotations[0].innerHTML.split("\n").join("").match(/[^\[\]]+/g);
     options = options.filter((el) => el && el.trim() != '');
     let anchored = [];
@@ -134,8 +135,7 @@ function RotateItems() {
     let ans = document.getElementsByClassName("answer-item");
     let answerOptions = [];
 
-    let lenans = ans.length;
-    for (let i = 0; i < lenans; i++) {
+    for (let i = ans.length - 1; i >= 0; i--) {
         answerOptions.push(ans.item(0));
         ansList.removeChild(ans.item(0));
     }
@@ -147,7 +147,6 @@ function RotateItems() {
                 let opts = anchored[0].ansOpts;
                 if (opts.length > 0) {
                     opts = opts.split(",");
-                    opts.sort(() => Math.random() - 0.5);
                     for (let i = 0; i < opts.length; i++) {
                         ansList.append(answerOptions[opts[parseInt(i)]]);
                         answerOptions[opts[parseInt(i)]] = undefined;
@@ -163,10 +162,9 @@ function RotateItems() {
         let opts = options[index][1];
         if (opts.length > 0) {
             opts = opts.split(",");
-            opts.sort(() => Math.random() - 0.5);
             for (let i = 0; i < opts.length; i++) {
-                ansList.append(answerOptions[opts[parseInt(i)]]);
-                answerOptions[opts[parseInt(i)]] = undefined;
+                ansList.append(answerOptions[parseInt(opts[i])]);
+                answerOptions[parseInt(opts[i])] = undefined;
             }
         }
         result += prefix + options[index][0] + suffix;
