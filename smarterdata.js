@@ -95,8 +95,16 @@ function RunDD() {
     }
 }
 
-function RotateItems() {
-    // get rotation type, list or inline
+
+function GetRotationIndexById(id) {
+    for (let i = 0; i < CURRENT_ROTATIONS.length; i++) {
+        if (CURRENT_ROTATIONS[i].id == id)
+            return i;
+    }
+}
+
+
+function GetRotationType() {
     let rotations = document.getElementsByTagName("rot");
     let useUl = false;
     if (rotations.length == 0) {
@@ -106,8 +114,13 @@ function RotateItems() {
         else
             return;
     }
+    return [rotations[0], useUl];
+}
+
+
+function GetRotatedItems(rotations) {
     // get filtered list items
-    let options = rotations[0].innerHTML.split("\n").join("").match(/[^\[\]]+/g);
+    let options = rotations.innerHTML.split("\n").join("").match(/[^\[\]]+/g);
     options = options.filter((el) => el && el.trim() != '');
     let anchored = [];
     for (let i = 0; i < options.length; i++) {
@@ -115,10 +128,10 @@ function RotateItems() {
         if (content != "" && content != null) {
             content = content[1];
             options[i] = options[i].replace("(" + content + ")", "");
-            options[i] = [options[i], content];
+            options[i] = [options[i], content, i];
         } else {
             content = [];
-            options[i] = [options[i], content];
+            options[i] = [options[i], content, i];
         }
         // get anchored items and their indexes
         if (options[i][0].startsWith("$$")) {
@@ -128,13 +141,112 @@ function RotateItems() {
         }
     }
     options = options.filter((el) => el && el[0].trim() != '');
+    return [anchored, options];
+}
+
+
+function RotateItemsOrder(order) {
+    // get rotation type, list or inline
+    let obj = GetRotationType();
+    if (!obj)
+        return;
+    let rotations = obj[0];
+    let useUl = obj[1];
+    obj = GetRotatedItems(rotations);
+    let anchored = obj[0]
+    let options = obj[1]
+
     let result = useUl ? "<ul>" : "";
     let prefix = useUl ? "<li>" : "";
     let suffix = useUl ? "</li>" : "";
     let ansList = document.getElementsByClassName("answers-list").item(0);
     let ans = document.getElementsByClassName("answer-item");
     let answerOptions = [];
+    for (let i = ans.length - 1; i >= 0; i--) {
+        answerOptions.push(ans.item(0));
+        ansList.removeChild(ans.item(0));
+    }
 
+    for (let i = 0; i < order.length; i++) {
+        if (order[i] == anchored[0].index) {
+            result += prefix + anchored[0].item + suffix;
+            let opts = anchored[0].ansOpts;
+            if (opts.length > 0) {
+                opts = opts.split(",");
+                for (let i = 0; i < opts.length; i++) {
+                    ansList.append(answerOptions[opts[parseInt(i)]]);
+                    answerOptions[opts[parseInt(i)]] = undefined;
+                }
+            }
+            anchored.splice(0, 1);
+        } else {
+
+            let index;
+            for (let j = 0; j < options.length; j++) {
+                if (options[j][2] == order[i]) {
+                    index = j;
+                    break;
+                }
+            }
+            let opts = options[index][1];
+            if (opts.length > 0) {
+                opts = opts.split(",");
+                for (let i = 0; i < opts.length; i++) {
+                    ansList.append(answerOptions[parseInt(opts[i])]);
+                    answerOptions[parseInt(opts[i])] = undefined;
+                }
+            }
+            result += prefix + options[index][0] + suffix;
+        }
+    }
+
+    for (let i = 0; i < answerOptions.length; i++) {
+        if (answerOptions[i] != undefined)
+            ansList.append(answerOptions[i]);
+    }
+
+    result += useUl ? "</ul>" : "";
+    $(rotations).replaceWith(result);
+}
+
+
+function RotateItems() {
+    // get rotation type, list or inline
+    let obj = GetRotationType();
+    if (!obj)
+        return;
+    let rotations = obj[0];
+    let useUl = obj[1];
+
+    // get rotation object, or create one if one doesn't exist
+    if (rotations.id != "") {
+        // rotation has an ID, generate an object for it if one doesn't exist
+        if (CURRENT_ROTATIONS.length == 0)
+            CURRENT_ROTATIONS.push({id: rotations.id, rotated: false});
+        else {
+            for (let i = 0; i < CURRENT_ROTATIONS.length; i++) {
+                if (CURRENT_ROTATIONS[i].id == rotations.id) {
+                    // if a rotation with the ID exists, we should match that rotation's order
+                    RotateItemsOrder(CURRENT_ROTATIONS[i].order);
+                    RotateItems();
+                    return;
+                } else if (i == CURRENT_ROTATIONS.length - 1) {
+                    CURRENT_ROTATIONS.push({id: rotations.id, rotated: false});
+                }
+            }
+        }
+    }
+    obj = GetRotatedItems(rotations);
+    let anchored = obj[0]
+    let options = obj[1]
+
+    let result = useUl ? "<ul>" : "";
+    let prefix = useUl ? "<li>" : "";
+    let suffix = useUl ? "</li>" : "";
+    let ansList = document.getElementsByClassName("answers-list").item(0);
+    let ans = document.getElementsByClassName("answer-item");
+    let answerOptions = [];
+    let order = [];
     for (let i = ans.length - 1; i >= 0; i--) {
         answerOptions.push(ans.item(0));
         ansList.removeChild(ans.item(0));
@@ -153,12 +265,14 @@ function RotateItems() {
                     }
                 }
                 // convert
+                order.push(anchored[0].index);
                 anchored.splice(0, 1);
                 counter++;
                 continue;
             }
         }
         let index = Math.floor(Math.random() * options.length);
+        order.push(options[index][2]);
         let opts = options[index][1];
         if (opts.length > 0) {
             opts = opts.split(",");
@@ -175,8 +289,17 @@ function RotateItems() {
         if (answerOptions[i] != undefined)
             ansList.append(answerOptions[i]);
     }
+    if (rotations.id != "") {
+        for (let i = 0; i < order.length; i++) {
+            if (order[i] != i) {
+                CURRENT_ROTATIONS[GetRotationIndexById(rotations.id)].rotated = true;
+                CURRENT_ROTATIONS[GetRotationIndexById(rotations.id)].order = order;
+                break;
+            }
+        }
+    }
     result += useUl ? "</ul>" : "";
-    $(rotations[0]).replaceWith(result);
+    $(rotations).replaceWith(result);
     RotateItems();
 }
 
@@ -215,6 +338,16 @@ function ParseModeText() {
     };
 }
 
+function FlipArr(ansList, answerOptions) {
+    arrFlipped.reverse();
+    for (let i = 0; i < answerOptions.length; i++) {
+        if (i >= start && i <= end) {
+            ansList.append(arrFlipped[i - start]);
+        } else {
+            ansList.append(answerOptions[i]);
+        }
+    }
+}
 
 function AnswersFlip() {
     // start point
@@ -238,14 +371,15 @@ function AnswersFlip() {
     }
     // get a sub array of values between start and end
     let arrFlipped = answerOptions.slice(start, end + 1);
-    if (GetRandomInt(0, 100) >= 50)
-        arrFlipped.reverse();
-    for (let i = 0; i < answerOptions.length; i++) {
-        if (i >= start && i <= end) {
-            ansList.append(arrFlipped[i - start]);
-        } else {
-            ansList.append(answerOptions[i]);
+    if (ansFlip[0].id != "") {
+        // only apply a flip if the corresponding ID was rotated
+        if (CURRENT_ROTATIONS[GetRotationIndexById(ansFlip[0].id)].rotated) {
+            //flip
+            FlipArr(ansList, answerOptions);
         }
+    } else {
+        if (GetRandomInt(0, 100) >= 50)
+            FlipArr(ansList, answerOptions)
     }
 }
 
@@ -256,7 +390,7 @@ function AnswerInsertWord() {
         return;
     toInsert = toInsert[0].innerText.split(",");
     var ans = document.getElementsByClassName("answer-item").item(parseInt(toInsert[1])).getElementsByClassName("label-text label-clickable").item(0);
-    $("<br><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + toInsert[0] + "<p>").insertAfter($(ans));
+    $("<br><p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" + toInsert[0] + "<p>").insertAfter($(ans));
     toInsert = document.getElementsByTagName("ansInsWord");
     $(toInsert).replaceWith("");
 }
